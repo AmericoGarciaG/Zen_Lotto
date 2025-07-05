@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { getHistoricalData } from '../api';
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
 const OddEvenChart = () => {
   const [chartData, setChartData] = useState<any>({
     labels: [],
     datasets: [],
   });
+  const [chartOptions, setChartOptions] = useState({});
 
   useEffect(() => {
     getHistoricalData().then(data => {
@@ -34,6 +36,7 @@ const OddEvenChart = () => {
 
       const labels = Object.keys(counts);
       const dataValues = Object.values(counts);
+      const total = dataValues.reduce((acc, value) => acc + value, 0);
 
       setChartData({
         labels,
@@ -63,13 +66,39 @@ const OddEvenChart = () => {
           },
         ],
       });
+
+      setChartOptions({
+        plugins: {
+          datalabels: {
+            formatter: (value: any, context: any) => {
+              const percentage = ((value / total) * 100).toFixed(2) + '%';
+              return percentage;
+            },
+            color: '#fff',
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context: any) {
+                let label = context.label || '';
+                if (label) {
+                  label += ': ';
+                }
+                const value = context.parsed;
+                const percentage = ((value / total) * 100).toFixed(2) + '%';
+                label += `${value} (${percentage})`;
+                return label;
+              }
+            }
+          }
+        }
+      });
     });
   }, []);
 
   return (
     <div>
       <h2>Frecuencia de Distribución Par/Impar</h2>
-      <Doughnut data={chartData} />
+      <Doughnut data={chartData} options={chartOptions} />
     </div>
   );
 };

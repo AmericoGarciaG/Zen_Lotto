@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { getHistoricalData } from '../api';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartDataLabels);
 
 const GroupsChart = () => {
   const [chartData, setChartData] = useState<any>({
     labels: [],
     datasets: [],
   });
+  const [chartOptions, setChartOptions] = useState({});
 
   useEffect(() => {
     getHistoricalData().then(data => {
@@ -35,6 +37,7 @@ const GroupsChart = () => {
 
       const labels = Object.keys(counts);
       const dataValues = Object.values(counts);
+      const total = dataValues.reduce((acc, value) => acc + value, 0);
 
       setChartData({
         labels,
@@ -46,6 +49,34 @@ const GroupsChart = () => {
           },
         ],
       });
+
+      setChartOptions({
+        plugins: {
+          datalabels: {
+            formatter: (value: any) => {
+              const percentage = ((value / total) * 100).toFixed(2) + '%';
+              return percentage;
+            },
+            color: '#fff',
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context: any) {
+                let label = context.dataset.label || '';
+                if (label) {
+                  label += ': ';
+                }
+                if (context.parsed.y !== null) {
+                  const value = context.parsed.y;
+                  const percentage = ((value / total) * 100).toFixed(2) + '%';
+                  label += `${value} (${percentage})`;
+                }
+                return label;
+              }
+            }
+          }
+        },
+      });
     });
   }, []);
 
@@ -53,9 +84,9 @@ const GroupsChart = () => {
     <div>
       <h2>Frecuencia de Distribución por Grupos</h2>
       <p style={{ fontSize: '12px', color: '#a7a7a7', margin: '0 0 1rem 0' }}>
-        Grupos: (1: 1-9), (2: 10-19), (3: 20-29), (4: 30-39)
+        Grupos: (1-9), (10-19), (20-29), (30-39)
       </p>
-      <Bar data={chartData} />
+      <Bar data={chartData} options={chartOptions} />
     </div>
   );
 };

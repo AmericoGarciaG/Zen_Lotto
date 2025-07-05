@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { getHistoricalData } from '../api';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartDataLabels);
 
 const SpreadChart = () => {
   const [chartData, setChartData] = useState<any>({
     labels: [],
     datasets: [],
   });
+  const [chartOptions, setChartOptions] = useState({});
 
   useEffect(() => {
     getHistoricalData().then(data => {
@@ -32,6 +34,7 @@ const SpreadChart = () => {
 
       const labels = Object.keys(counts);
       const dataValues = Object.values(counts);
+      const total = dataValues.reduce((acc, value) => acc + value, 0);
 
       setChartData({
         labels,
@@ -43,13 +46,41 @@ const SpreadChart = () => {
           },
         ],
       });
+
+      setChartOptions({
+        plugins: {
+          datalabels: {
+            formatter: (value: any) => {
+              const percentage = ((value / total) * 100).toFixed(2) + '%';
+              return percentage;
+            },
+            color: '#fff',
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context: any) {
+                let label = context.dataset.label || '';
+                if (label) {
+                  label += ': ';
+                }
+                if (context.parsed.y !== null) {
+                  const value = context.parsed.y;
+                  const percentage = ((value / total) * 100).toFixed(2) + '%';
+                  label += `${value} (${percentage})`;
+                }
+                return label;
+              }
+            }
+          }
+        },
+      });
     });
   }, []);
 
   return (
     <div>
       <h2>Frecuencia de Rango (Spread) en Sorteos</h2>
-      <Bar data={chartData} />
+      <Bar data={chartData} options={chartOptions} />
     </div>
   );
 };
