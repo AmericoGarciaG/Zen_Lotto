@@ -139,17 +139,27 @@ button:disabled {
   padding: 1rem;
   border-radius: 6px;
   font-weight: 500;
-  border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem; /* Add a gap between the light and the text */
+  text-align: left; /* Align text to the left within its container */
 }
 
-.result-message.passed {
-  color: #a5d6a7; /* Lighter green text */
-  background-color: #1b3d1b; /* Dark green background */
-  border-color: #2e7d32; /* Subtle green border */
+.traffic-light {
+  font-size: 1.5em; /* Slightly smaller for better balance */
+  line-height: 1; 
+  flex-shrink: 0; /* Prevent the circle from shrinking */
 }
 
-.result-message.failed {
-  color: #ef9a9a; /* Lighter red text */
-  background-color: #4d1c1c; /* Dark red background */
-  border-color: #c62828; /* Subtle red border */
+.traffic-light.green {
+  color: #4CAF50;
+}
+
+.traffic-light.yellow {
+  color: #FFC107;
+}
+
+.traffic-light.red {
+  color: #F44336;
 }

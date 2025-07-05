@@ -1,6 +1,6 @@
 import './App.css'
 import CombinationAnalyzer from './components/CombinationAnalyzer';
-import SumDistributionChart from './components/SumDistributionChart';
+import SumOverTimeChart from './components/SumOverTimeChart';
 
 function App() {
   return (
@@ -13,10 +13,7 @@ function App() {
           <h2>Analizador de Combinaciones</h2>
           <CombinationAnalyzer />
         </section>
-        <section>
-          <h2>Análisis Histórico</h2>
-          <SumDistributionChart />
-        </section>
+        <SumOverTimeChart />
       </main>
     </div>
   )
