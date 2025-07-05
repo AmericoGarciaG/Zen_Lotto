@@ -1,17 +1,22 @@
-import { useState, useEffect } from 'react';
-import { getHistoricalData } from '../api';
+import { useState, useEffect, createRef } from 'react';
 
 interface AnalysisResult {
-  criterion: string;
+  criterion: 'Suma' | 'Par/Impar' | 'Distribución por Grupos' | 'Rango';
   status: 'good' | 'neutral' | 'bad';
   message: string;
 }
 
-const CombinationAnalyzer = () => {
+interface CombinationAnalyzerProps {
+  setActiveChart: (chart: 'sum' | 'oddEven' | 'groups' | 'spread') => void;
+}
+
+const CombinationAnalyzer: React.FC<CombinationAnalyzerProps> = ({ setActiveChart }) => {
   const [combination, setCombination] = useState<(number | '')[]>(Array(6).fill(''));
   const [analysisResults, setAnalysisResults] = useState<AnalysisResult[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const inputRefs = Array(6).fill(0).map(() => createRef<HTMLInputElement>());
+  const analyzeButtonRef = createRef<HTMLButtonElement>();
 
   useEffect(() => {
     if (hasUserInteracted) {
@@ -62,28 +67,30 @@ const CombinationAnalyzer = () => {
       results.push({ criterion: 'Par/Impar', status: 'neutral', message: `🟡 Equilibrio: ${evens} Pares, ${odds} Impares. Esta distribución es menos frecuente.` });
     }
 
-    // C. Decade Distribution Analysis
-    const decades = new Set(numbers.map(n => {
+    // C. Group Distribution Analysis
+    const groups = new Set(numbers.map(n => {
       if (n >= 1 && n <= 9) return 1;
       if (n >= 10 && n <= 19) return 2;
       if (n >= 20 && n <= 29) return 3;
       return 4;
     }));
-    const numberOfDecades = decades.size;
-    if (numberOfDecades === 3 || numberOfDecades === 4) {
-      results.push({ criterion: 'Distribución', status: 'good', message: `✅ Distribución: Repartida en ${numberOfDecades} décadas. Estructura balanceada.` });
-    } else if (numberOfDecades === 2) {
-      results.push({ criterion: 'Distribución', status: 'bad', message: `❌ Distribución: Agrupada en solo ${numberOfDecades} décadas. Estructura muy atípica.` });
+    const numberOfGroups = groups.size;
+    if (numberOfGroups >= 3) {
+      results.push({ criterion: 'Distribución por Grupos', status: 'good', message: `✅ Distribución: ${numberOfGroups} grupos. Estructura balanceada.` });
+    } else if (numberOfGroups === 2) {
+      results.push({ criterion: 'Distribución por Grupos', status: 'bad', message: `❌ Distribución: ${numberOfGroups} grupos. Estructura muy atípica.` });
     } else {
-      results.push({ criterion: 'Distribución', status: 'bad', message: `❌ Distribución: ¡Extremo! Todos los números en 1 década. Estructura extremadamente rara.` });
+      results.push({ criterion: 'Distribución por Grupos', status: 'bad', message: `❌ Distribución: 1 grupo. Estructura extremadamente rara.` });
     }
 
     // D. Spread Analysis
-    const spread = Math.max(...numbers) - Math.min(...numbers);
+    const min = Math.min(...numbers);
+    const max = Math.max(...numbers);
+    const spread = max - min;
     if (spread >= 25 && spread <= 35) {
-      results.push({ criterion: 'Rango', status: 'good', message: `✅ Rango (Spread): ${spread}. Muy bien distribuido.` });
+      results.push({ criterion: 'Rango', status: 'good', message: `✅ Rango: ${spread}. La diferencia entre el máximo ${max} y el mínimo ${min} es ideal.` });
     } else {
-      results.push({ criterion: 'Rango', status: 'neutral', message: `🟡 Rango (Spread): ${spread}. Un poco atípico (muy junto o muy separado).` });
+      results.push({ criterion: 'Rango', status: 'neutral', message: `🟡 Rango: ${spread}. La diferencia entre el máximo ${max} y el mínimo ${min} es un poco atípica.` });
     }
 
     setAnalysisResults(results);
@@ -97,6 +104,26 @@ const CombinationAnalyzer = () => {
     setAnalysisResults([]);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    if (e.key === 'Enter') {
+      if (index < 5) {
+        inputRefs[index + 1].current?.focus();
+      } else {
+        analyzeButtonRef.current?.focus();
+      }
+    }
+  };
+
+  const handleCriterionClick = (criterion: AnalysisResult['criterion']) => {
+    const chartMap = {
+      'Suma': 'sum',
+      'Par/Impar': 'oddEven',
+      'Distribución por Grupos': 'groups',
+      'Rango': 'spread',
+    };
+    setActiveChart(chartMap[criterion] as 'sum' | 'oddEven' | 'groups' | 'spread');
+  };
+
   return (
     <div>
       {error && <div className="validation-error">{error}</div>}
@@ -104,20 +131,22 @@ const CombinationAnalyzer = () => {
         {combination.map((value, index) => (
           <input
             key={index}
+            ref={inputRefs[index]}
             type="number"
             value={value}
             onChange={(e) => handleInputChange(index, e.target.value)}
+            onKeyDown={(e) => handleKeyDown(e, index)}
             min="1"
             max="39"
           />
         ))}
       </div>
-      <button onClick={handleAnalyze} disabled={error !== null}>
+      <button ref={analyzeButtonRef} onClick={handleAnalyze} disabled={error !== null}>
         Analizar
       </button>
       <ul className="analysis-results">
         {analysisResults.map((result, index) => (
-          <li key={index} className={`result-item ${result.status}`}>
+          <li key={index} className={`result-item ${result.status}`} onClick={() => handleCriterionClick(result.criterion)}>
             {result.message}
           </li>
         ))}

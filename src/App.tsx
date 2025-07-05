@@ -1,8 +1,15 @@
+import { useState } from 'react';
 import './App.css'
 import CombinationAnalyzer from './components/CombinationAnalyzer';
 import SumOverTimeChart from './components/SumOverTimeChart';
+import OddEvenChart from './components/OddEvenChart';
+import GroupsChart from './components/GroupsChart';
+import SpreadChart from './components/SpreadChart';
+import ChartSelector from './components/ChartSelector';
 
 function App() {
+  const [activeChart, setActiveChart] = useState<'sum' | 'oddEven' | 'groups' | 'spread'>('sum');
+
   return (
     <div className="App">
       <header>
@@ -11,9 +18,15 @@ function App() {
       <main>
         <section>
           <h2>Analizador de Combinaciones</h2>
-          <CombinationAnalyzer />
+          <CombinationAnalyzer setActiveChart={setActiveChart} />
         </section>
-        <SumOverTimeChart />
+        <section>
+          <ChartSelector activeChart={activeChart} setActiveChart={setActiveChart} />
+          {activeChart === 'sum' && <SumOverTimeChart />}
+          {activeChart === 'oddEven' && <OddEvenChart />}
+          {activeChart === 'groups' && <GroupsChart />}
+          {activeChart === 'spread' && <SpreadChart />}
+        </section>
       </main>
     </div>
   )
