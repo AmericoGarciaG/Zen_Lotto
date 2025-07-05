@@ -134,32 +134,27 @@ button:disabled {
   font-weight: bold;
 }
 
-.result-message {
+.analysis-results {
+  list-style: none;
+  padding: 0;
   margin-top: 1rem;
-  padding: 1rem;
-  border-radius: 6px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem; /* Add a gap between the light and the text */
-  text-align: left; /* Align text to the left within its container */
+  text-align: left;
 }
 
-.traffic-light {
-  font-size: 1.5em; /* Slightly smaller for better balance */
-  line-height: 1; 
-  flex-shrink: 0; /* Prevent the circle from shrinking */
+.result-item {
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 4px;
 }
 
-.traffic-light.green {
-  color: #4CAF50;
+.result-item.good {
+  color: #c8e6c9;
 }
 
-.traffic-light.yellow {
-  color: #FFC107;
+.result-item.neutral {
+  color: #fff9c4;
 }
 
-.traffic-light.red {
-  color: #F44336;
+.result-item.bad {
+  color: #ffcdd2;
 }
