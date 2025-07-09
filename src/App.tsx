@@ -1,35 +1,30 @@
 import { useState } from 'react';
-import './App.css'
 import CombinationAnalyzer from './components/CombinationAnalyzer';
-import SumOverTimeChart from './components/SumOverTimeChart';
-import OddEvenChart from './components/OddEvenChart';
-import GroupsChart from './components/GroupsChart';
-import SpreadChart from './components/SpreadChart';
 import ChartSelector from './components/ChartSelector';
+import DistributionCharts from './components/DistributionCharts'; // Importar el nuevo componente
+import './App.css';
 
 function App() {
-  const [activeChart, setActiveChart] = useState<'sum' | 'oddEven' | 'groups' | 'spread'>('sum');
+  const [activeChart, setActiveChart] = useState<'omegaDistribution' | null>(null);
 
   return (
     <div className="App">
-      <header>
-        <h1>Zen Lotto - Explorador Estadístico para Melate Retro</h1>
+      <header className="App-header">
+        <h1>Zen Lotto</h1>
+        <p>Analizador de Combinaciones de Melate Retro</p>
       </header>
       <main>
-        <section>
-          <h2>Analizador de Combinaciones</h2>
-          <CombinationAnalyzer setActiveChart={setActiveChart} />
-        </section>
-        <section>
-          <ChartSelector activeChart={activeChart} setActiveChart={setActiveChart} />
-          {activeChart === 'sum' && <SumOverTimeChart />}
-          {activeChart === 'oddEven' && <OddEvenChart />}
-          {activeChart === 'groups' && <GroupsChart />}
-          {activeChart === 'spread' && <SpreadChart />}
-        </section>
+        {/* Pasar 'omegaDistribution' para activar el nuevo gráfico */}
+        <CombinationAnalyzer setActiveChart={setActiveChart} /> 
+        <div className="charts-container">
+          {/* El selector ahora trabajará con 'omegaDistribution' */}
+          {activeChart && <ChartSelector setActiveChart={setActiveChart} activeChart={activeChart} />}
+          {/* Mostrar el nuevo componente cuando 'activeChart' sea 'omegaDistribution' */}
+          {activeChart === 'omegaDistribution' && <DistributionCharts />}
+        </div>
       </main>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

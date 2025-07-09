@@ -1,36 +1,21 @@
 import React from 'react';
 
 interface ChartSelectorProps {
-  activeChart: 'sum' | 'oddEven' | 'groups' | 'spread';
-  setActiveChart: (chart: 'sum' | 'oddEven' | 'groups' | 'spread') => void;
+  // Ahora el tipo acepta 'omegaDistribution'
+  setActiveChart: (chart: 'omegaDistribution') => void;
+  activeChart: 'omegaDistribution' | null;
 }
 
-const ChartSelector: React.FC<ChartSelectorProps> = ({ activeChart, setActiveChart }) => {
+const ChartSelector: React.FC<ChartSelectorProps> = ({ setActiveChart, activeChart }) => {
   return (
     <div className="chart-selector">
-      <button 
-        className={activeChart === 'sum' ? 'active' : ''}
-        onClick={() => setActiveChart('sum')}
+      <button
+        // Comprobar si activeChart es 'omegaDistribution'
+        className={activeChart === 'omegaDistribution' ? 'active' : ''}
+        // Al hacer clic, establecer activeChart en 'omegaDistribution'
+        onClick={() => setActiveChart('omegaDistribution')}
       >
-        Suma en el Tiempo
-      </button>
-      <button 
-        className={activeChart === 'oddEven' ? 'active' : ''}
-        onClick={() => setActiveChart('oddEven')}
-      >
-        Distribución Par/Impar
-      </button>
-      <button 
-        className={activeChart === 'groups' ? 'active' : ''}
-        onClick={() => setActiveChart('groups')}
-      >
-        Distribución por Grupos
-      </button>
-      <button 
-        className={activeChart === 'spread' ? 'active' : ''}
-        onClick={() => setActiveChart('spread')}
-      >
-        Distribución de Rango (Spread)
+        Distribución Omega
       </button>
     </div>
   );
