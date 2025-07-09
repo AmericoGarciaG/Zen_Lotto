@@ -13,7 +13,7 @@ function App() {
   return (
     <div className="App">
       <header>
-        <h1>Zen Lotto - Análisis Estadístico de Melate Retro</h1>
+        <h1>Zen Lotto - Explorador Estadístico para Melate Retro</h1>
       </header>
       <main>
         <section>

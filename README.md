@@ -1,69 +1,17 @@
-# React + TypeScript + Vite
+# Zen Lotto - Explorador Estadístico para Melate Retro
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Propósito
 
-Currently, two official plugins are available:
+Zen Lotto es una herramienta educativa y de análisis diseñada para explorar las propiedades estadísticas de las combinaciones de la lotería Melate Retro. Te ayuda a entender las características de las combinaciones ganadoras históricas y a tomar decisiones informadas, evitando las combinaciones estructuralmente improbables.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Hallazgo Principal
 
-## Expanding the ESLint configuration
+Nuestro análisis, validado por simulaciones robustas, muestra que no hay evidencia de un sesgo físico en el sorteo. La frecuencia de combinaciones 'ideales' (Grand Slams) en la historia (~39%) es consistente con su proporción natural en el universo de posibilidades (~38.3%).
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Cómo Usar la Herramienta
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Usa el analizador para ver cómo tu combinación se compara con las tendencias históricas. El objetivo no es predecir, sino aplicar una disciplina estadística a tu selección.
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## Disclaimer
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Los juegos de lotería son inherentemente aleatorios. Ninguna estrategia puede garantizar una victoria. Juega de manera responsable.

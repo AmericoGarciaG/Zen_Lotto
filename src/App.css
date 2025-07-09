@@ -147,22 +147,29 @@ button:disabled {
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.2s;
+  color: rgba(255, 255, 255, 0.87);
 }
 
 .result-item:hover {
   background-color: #3a3a3a;
 }
 
-.result-item.good {
-  color: #c8e6c9;
+.result-item::before {
+  content: '●';
+  margin-right: 0.75rem;
+  font-size: 1.2em;
 }
 
-.result-item.neutral {
-  color: #fff9c4;
+.result-item.good::before {
+  color: #4CAF50; /* Verde */
 }
 
-.result-item.bad {
-  color: #ffcdd2;
+.result-item.neutral::before {
+  color: #FFC107; /* Amarillo */
+}
+
+.result-item.bad::before {
+  color: #F44336; /* Rojo */
 }
 
 .chart-selector {
