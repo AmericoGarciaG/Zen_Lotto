@@ -48,6 +48,12 @@ th:nth-child(9), td:nth-child(9) { width: 12%; }
   color: #f8d7da;
 }
 
+.bolsa-ganadora {
+  background-color: #1a4d28;
+  color: #d4edda;
+  font-weight: bold;
+}
+
 .pagination {
   display: flex;
   justify-content: center;

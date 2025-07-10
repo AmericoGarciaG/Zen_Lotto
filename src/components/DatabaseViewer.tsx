@@ -13,6 +13,7 @@ interface MelateRetroRecord {
   r4: number;
   r5: number;
   r6: number;
+  bolsa_acumulada: string;
   clase_omega: number;
 }
 
@@ -65,6 +66,7 @@ const DatabaseViewer: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
+    // The records are already sorted by 'concurso' descending in the JSON.
     setRecords(jsonData.melate_retro);
   }, []);
 
@@ -78,6 +80,19 @@ const DatabaseViewer: React.FC = () => {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
+  };
+
+  const formatBolsa = (bolsa: string) => {
+    const number = parseFloat(bolsa);
+    if (isNaN(number)) {
+      return bolsa;
+    }
+    return new Intl.NumberFormat('es-MX', {
+      style: 'currency',
+      currency: 'MXN',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(number);
   };
 
   return (
@@ -99,25 +114,38 @@ const DatabaseViewer: React.FC = () => {
             <th>R4</th>
             <th>R5</th>
             <th>R6</th>
+            <th>Bolsa acumulada</th>
             <th>Clase Omega</th>
           </tr>
         </thead>
         <tbody>
-          {currentRecords.map(record => (
-            <tr key={record.id}>
-              <td>{record.concurso}</td>
-              <td>{formatDate(record.fecha)}</td>
-              <td>{record.r1}</td>
-              <td>{record.r2}</td>
-              <td>{record.r3}</td>
-              <td>{record.r4}</td>
-              <td>{record.r5}</td>
-              <td>{record.r6}</td>
-              <td className={record.clase_omega ? 'omega' : 'no-omega'}>
-                {record.clase_omega ? 'Sí' : 'No'}
-              </td>
-            </tr>
-          ))}
+          {currentRecords.map((record, index) => {
+            const recordIndexInFullArray = startIndex + index;
+            // The next contest in chronological order is the previous item in the array
+            const nextContestRecord = records[recordIndexInFullArray - 1];
+            const isWinnerBolsa = nextContestRecord 
+              ? parseFloat(nextContestRecord.bolsa_acumulada) === 5000000 
+              : false;
+
+            return (
+              <tr key={record.id}>
+                <td>{record.concurso}</td>
+                <td>{formatDate(record.fecha)}</td>
+                <td>{record.r1}</td>
+                <td>{record.r2}</td>
+                <td>{record.r3}</td>
+                <td>{record.r4}</td>
+                <td>{record.r5}</td>
+                <td>{record.r6}</td>
+                <td className={isWinnerBolsa ? 'bolsa-ganadora' : ''}>
+                  {formatBolsa(record.bolsa_acumulada)}
+                </td>
+                <td className={record.clase_omega ? 'omega' : 'no-omega'}>
+                  {record.clase_omega ? 'Sí' : 'No'}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
       <Pagination

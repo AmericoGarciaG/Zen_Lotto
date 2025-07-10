@@ -106,6 +106,7 @@ async function main() {
                 concurso INTEGER UNIQUE,
                 fecha TEXT,
                 r1 INTEGER, r2 INTEGER, r3 INTEGER, r4 INTEGER, r5 INTEGER, r6 INTEGER,
+                bolsa_acumulada TEXT,
                 clase_omega INTEGER
             )
         `);
@@ -118,8 +119,8 @@ async function main() {
         
         const stmt = db.prepare(`
             INSERT OR IGNORE INTO melate_retro (
-                concurso, fecha, r1, r2, r3, r4, r5, r6, clase_omega
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                concurso, fecha, r1, r2, r3, r4, r5, r6, bolsa_acumulada, clase_omega
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `);
 
         records.forEach(record => {
@@ -137,6 +138,7 @@ async function main() {
                 stmt.run(
                     record.CONCURSO, formatDate(record.FECHA),
                     record.F1, record.F2, record.F3, record.F4, record.F5, record.F6,
+                    record.BOLSA,
                     claseOmega
                 );
             }
