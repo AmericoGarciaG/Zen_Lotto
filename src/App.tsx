@@ -2,6 +2,8 @@ import { useState } from 'react';
 import CombinationAnalyzer from './components/CombinationAnalyzer';
 import DistributionCharts from './components/DistributionCharts';
 import DatabaseViewer from './components/DatabaseViewer';
+import OmegaScoreChart from './components/OmegaScoreChart';
+import OmegaScoreVsPrizeChart from './components/OmegaScoreVsPrizeChart';
 import './App.css';
 
 type View = 'analyzer' | 'database';
@@ -30,6 +32,8 @@ function App() {
             <CombinationAnalyzer setActiveChart={setActiveChart} />
             <div className="charts-container">
               {activeChart === 'omegaDistribution' && <DistributionCharts />}
+              {activeChart === 'omegaDistribution' && <OmegaScoreChart />}
+              {activeChart === 'omegaDistribution' && <OmegaScoreVsPrizeChart />}
             </div>
           </>
         ) : (

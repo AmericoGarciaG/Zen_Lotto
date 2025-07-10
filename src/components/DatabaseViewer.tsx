@@ -15,6 +15,11 @@ interface MelateRetroRecord {
   r6: number;
   bolsa_acumulada: string;
   clase_omega: number;
+  afinidad_total: number;
+  afinidad_cuartetos: number;
+  afinidad_tercias: number;
+  afinidad_pares: number;
+  omega_score: number;
 }
 
 const RECORDS_PER_PAGE = 20;
@@ -116,6 +121,11 @@ const DatabaseViewer: React.FC = () => {
             <th>R6</th>
             <th>Bolsa acumulada</th>
             <th>Clase Omega</th>
+            <th>Omega Score</th>
+            <th>Afinidad Total</th>
+            <th>Afinidad Cuartetos</th>
+            <th>Afinidad Tercias</th>
+            <th>Afinidad Pares</th>
           </tr>
         </thead>
         <tbody>
@@ -143,6 +153,11 @@ const DatabaseViewer: React.FC = () => {
                 <td className={record.clase_omega ? 'omega' : 'no-omega'}>
                   {record.clase_omega ? 'Sí' : 'No'}
                 </td>
+                <td>{record.omega_score.toFixed(4)}</td>
+                <td>{record.afinidad_total}</td>
+                <td>{record.afinidad_cuartetos}</td>
+                <td>{record.afinidad_tercias}</td>
+                <td>{record.afinidad_pares}</td>
               </tr>
             );
           })}

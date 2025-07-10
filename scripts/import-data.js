@@ -21,7 +21,7 @@ const httpsAgent = new https.Agent({
   rejectUnauthorized: false,
 });
 
-// Helper functions (remain the same)
+// Helper functions
 function calcularAfinidadPares(combinacion) {
     let afinidad = 0;
     for (let i = 0; i < combinacion.length; i++) {
@@ -63,15 +63,32 @@ function calcularAfinidadCuartetos(combinacion) {
     return afinidad;
 }
 
-function esClaseOmega(combinacion) {
+function analizarCombinacion(combinacion) {
     const afinidadPares = calcularAfinidadPares(combinacion);
-    if (afinidadPares < umbral_pares) return 0;
-
     const afinidadTercias = calcularAfinidadTercias(combinacion);
-    if (afinidadTercias < umbral_tercias) return 0;
-
     const afinidadCuartetos = calcularAfinidadCuartetos(combinacion);
-    return afinidadCuartetos >= umbral_cuartetos ? 1 : 0;
+    
+    const esOmega = afinidadPares >= umbral_pares &&
+                    afinidadTercias >= umbral_tercias &&
+                    afinidadCuartetos >= umbral_cuartetos;
+
+    let omegaScore = 0;
+    if (esOmega) {
+        const excessPares = (afinidadPares - umbral_pares) / umbral_pares;
+        const excessTercias = (afinidadTercias - umbral_tercias) / umbral_tercias;
+        const excessCuartetos = (afinidadCuartetos - umbral_cuartetos) / umbral_cuartetos;
+        // Weighted sum: 50% for quartets, 30% for trios, 20% for pairs
+        omegaScore = (0.5 * excessCuartetos) + (0.3 * excessTercias) + (0.2 * excessPares);
+    }
+
+    return {
+        clase_omega: esOmega ? 1 : 0,
+        afinidad_pares: afinidadPares,
+        afinidad_tercias: afinidadTercias,
+        afinidad_cuartetos: afinidadCuartetos,
+        afinidad_total: afinidadPares + afinidadTercias + afinidadCuartetos,
+        omega_score: omegaScore
+    };
 }
 
 async function downloadCSV(url, outputPath) {
@@ -107,7 +124,12 @@ async function main() {
                 fecha TEXT,
                 r1 INTEGER, r2 INTEGER, r3 INTEGER, r4 INTEGER, r5 INTEGER, r6 INTEGER,
                 bolsa_acumulada TEXT,
-                clase_omega INTEGER
+                clase_omega INTEGER,
+                afinidad_total INTEGER,
+                afinidad_cuartetos INTEGER,
+                afinidad_tercias INTEGER,
+                afinidad_pares INTEGER,
+                omega_score REAL
             )
         `);
         
@@ -119,8 +141,10 @@ async function main() {
         
         const stmt = db.prepare(`
             INSERT OR IGNORE INTO melate_retro (
-                concurso, fecha, r1, r2, r3, r4, r5, r6, bolsa_acumulada, clase_omega
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                concurso, fecha, r1, r2, r3, r4, r5, r6, bolsa_acumulada, 
+                clase_omega, afinidad_total, afinidad_cuartetos, afinidad_tercias, afinidad_pares,
+                omega_score
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `);
 
         records.forEach(record => {
@@ -134,12 +158,17 @@ async function main() {
             ].filter(n => !isNaN(n));
 
             if (combination.length === 6) {
-                const claseOmega = esClaseOmega(combination);
+                const analisis = analizarCombinacion(combination);
                 stmt.run(
                     record.CONCURSO, formatDate(record.FECHA),
                     record.F1, record.F2, record.F3, record.F4, record.F5, record.F6,
                     record.BOLSA,
-                    claseOmega
+                    analisis.clase_omega,
+                    analisis.afinidad_total,
+                    analisis.afinidad_cuartetos,
+                    analisis.afinidad_tercias,
+                    analisis.afinidad_pares,
+                    analisis.omega_score
                 );
             }
         });
