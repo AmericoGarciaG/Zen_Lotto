@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import CombinationAnalyzer from './components/CombinationAnalyzer';
-import ChartSelector from './components/ChartSelector';
 import DistributionCharts from './components/DistributionCharts';
-import DatabaseViewer from './components/DatabaseViewer'; // Importar el visor de la BD
+import DatabaseViewer from './components/DatabaseViewer';
 import './App.css';
 
 type View = 'analyzer' | 'database';
@@ -30,7 +29,6 @@ function App() {
           <>
             <CombinationAnalyzer setActiveChart={setActiveChart} />
             <div className="charts-container">
-              {activeChart && <ChartSelector setActiveChart={setActiveChart} activeChart={activeChart} />}
               {activeChart === 'omegaDistribution' && <DistributionCharts />}
             </div>
           </>

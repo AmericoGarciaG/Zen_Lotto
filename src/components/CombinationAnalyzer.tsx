@@ -2,13 +2,12 @@ import { useState, useEffect, createRef } from 'react';
 import { evaluarOmegaDetallado, type OmegaEvaluationResult } from '../api/omega';
 
 interface AnalysisResult {
-  criterion: 'Clase Omega' | 'Par/Impar';
-  status: 'good' | 'neutral' | 'bad';
+  criterion: 'Clase Omega';
+  status: 'good' | 'bad';
   message: string;
 }
 
 interface CombinationAnalyzerProps {
-  // Ahora el tipo acepta 'omegaDistribution'
   setActiveChart: (chart: 'omegaDistribution' | null) => void;
 }
 
@@ -23,11 +22,11 @@ const CombinationAnalyzer: React.FC<CombinationAnalyzerProps> = ({ setActiveChar
 
   useEffect(() => {
     if (hasUserInteracted) {
-      validate(combination, 'onTheFly');
+      validate(combination);
     }
   }, [combination, hasUserInteracted]);
 
-  const validate = (combo: (number | '')[], context: 'onTheFly' | 'onAnalyze') => {
+  const validate = (combo: (number | '')[]) => {
     const filledNumbers = combo.filter(n => n !== '').map(Number);
     if (filledNumbers.some(num => num < 1 || num > 39)) {
       setError('❌ Los números deben estar entre 1 y 39.');
@@ -37,16 +36,17 @@ const CombinationAnalyzer: React.FC<CombinationAnalyzerProps> = ({ setActiveChar
       setError('❌ No se permiten números repetidos.');
       return false;
     }
-    if (context === 'onAnalyze' && combo.some(num => num === '')) {
-      setError('❌ Por favor, ingresa los 6 números.');
-      return false;
-    }
     setError(null);
     return true;
   };
 
   const handleAnalyze = () => {
-    if (!validate(combination, 'onAnalyze')) {
+    const filledNumbers = combination.filter(n => n !== '').map(Number);
+    if (filledNumbers.length < 6) {
+        setError('❌ Por favor, ingresa los 6 números.');
+        return;
+    }
+    if (!validate(combination)) {
       return;
     }
 
@@ -64,23 +64,14 @@ const CombinationAnalyzer: React.FC<CombinationAnalyzerProps> = ({ setActiveChar
 
     const results: AnalysisResult[] = [];
 
-    // Omega Class Analysis
     if (omegaEval.esOmega) {
       results.push({ criterion: 'Clase Omega', status: 'good', message: `✅ ¡Clase Omega! Esta combinación cumple con los 3 criterios de afinidad histórica.` });
     } else {
         results.push({ criterion: 'Clase Omega', status: 'bad', message: `❌ No es Clase Omega. Cumple ${omegaEval.criteriosCumplidos} de 3 criterios.` });
     }
 
-    // B. Even/Odd Analysis
-    const evens = numbers.filter(n => n % 2 === 0).length;
-    const odds = 6 - evens;
-    if ([2, 3, 4].includes(evens)) {
-      results.push({ criterion: 'Par/Impar', status: 'good', message: `🟢 Equilibrio: ${evens} Pares, ${odds} Impares. Esta distribución balanceada se encuentra en el 81.8% de los sorteos.` });
-    } else {
-      results.push({ criterion: 'Par/Impar', status: 'neutral', message: `🟡 Equilibrio: ${evens} Pares, ${odds} Impares. Esta distribución es menos común, ocurriendo solo en el 18.2% de los casos.` });
-    }
-
     setAnalysisResults(results);
+    setActiveChart('omegaDistribution'); // Mostrar el gráfico automáticamente
   };
 
   const handleInputChange = (index: number, value: string) => {
@@ -90,6 +81,7 @@ const CombinationAnalyzer: React.FC<CombinationAnalyzerProps> = ({ setActiveChar
     setCombination(newCombination);
     setAnalysisResults([]);
     setOmegaResult(null);
+    setActiveChart(null); // Ocultar el gráfico al cambiar los números
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
@@ -99,15 +91,6 @@ const CombinationAnalyzer: React.FC<CombinationAnalyzerProps> = ({ setActiveChar
       } else {
         analyzeButtonRef.current?.focus();
       }
-    }
-  };
-
-  const handleCriterionClick = (criterion: AnalysisResult['criterion']) => {
-    // Si se hace clic en 'Clase Omega', se activa el gráfico 'omegaDistribution'
-    if (criterion === 'Clase Omega') {
-      setActiveChart('omegaDistribution');
-    } else {
-      setActiveChart(null); // Desactivar para otros criterios
     }
   };
 
@@ -133,7 +116,7 @@ const CombinationAnalyzer: React.FC<CombinationAnalyzerProps> = ({ setActiveChar
       </button>
       <ul className="analysis-results">
         {analysisResults.map((result, index) => (
-          <li key={index} className={`result-item ${result.status}`} onClick={() => handleCriterionClick(result.criterion)}>
+          <li key={index} className={`result-item ${result.status}`}>
             {result.message}
           </li>
         ))}

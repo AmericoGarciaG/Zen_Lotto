@@ -1,75 +1,100 @@
-import React from 'react';
+// src/components/DistributionCharts.tsx
+import React, { useState, useEffect } from 'react';
+import jsonData from '../api/db.json';
 import './DistributionCharts.css';
 
+interface Stats {
+  totalRecords: number;
+  omegaCount: number;
+  nonOmegaCount: number;
+  omegaPercentage: number;
+  nonOmegaPercentage: number;
+}
+
 const DistributionCharts: React.FC = () => {
-    // Datos fijos
-    const totalSorteosHistoricos = 1500;
-    const porcentajeOmegaHistorico = 61.77;
-    
-    const combinacionesOmegaHistoricas = Math.round(totalSorteosHistoricos * (porcentajeOmegaHistorico / 100));
-    const combinacionesNoOmegaHistoricas = totalSorteosHistoricos - combinacionesOmegaHistoricas;
-    const porcentajeNoOmegaHistorico = 100 - porcentajeOmegaHistorico;
+  const [stats, setStats] = useState<Stats | null>(null);
 
-    const totalCombinacionesPosibles = 3262623; // C(39, 6)
-    const porcentajeOmegaTotal = 2.4128;
-    
-    const combinacionesOmegaTotales = Math.round(totalCombinacionesPosibles * (porcentajeOmegaTotal / 100));
-    const combinacionesNoOmegaTotales = totalCombinacionesPosibles - combinacionesOmegaTotales;
-    const porcentajeNoOmegaTotal = 100 - porcentajeOmegaTotal;
+  // Datos para el gráfico de todas las combinaciones
+  const totalCombinations = 3262623;
+  const omegaCombinations = 78722;
+  const nonOmegaCombinations = totalCombinations - omegaCombinations;
+  const omegaCombinationsPercentage = (omegaCombinations / totalCombinations) * 100;
+  const nonOmegaCombinationsPercentage = 100 - omegaCombinationsPercentage;
 
-    return (
-        <div className="charts-wrapper">
-            <h3>Distribución de Clases Omega</h3>
-            
-            <div className="chart-container">
-                <h4>Basado en Sorteos Históricos (últimos {totalSorteosHistoricos})</h4>
-                <div className="chart-bar">
-                    <div 
-                        className="bar-segment omega" 
-                        style={{ width: `${porcentajeOmegaHistorico}%` }}
-                        title={`Clase Omega: ${combinacionesOmegaHistoricas.toLocaleString()} combinaciones`}
-                    >
-                        {porcentajeOmegaHistorico.toFixed(2)}%
-                    </div>
-                    <div 
-                        className="bar-segment no-omega" 
-                        style={{ width: `${porcentajeNoOmegaHistorico}%` }}
-                        title={`No Omega: ${combinacionesNoOmegaHistoricas.toLocaleString()} combinaciones`}
-                    >
-                         {porcentajeNoOmegaHistorico.toFixed(2)}%
-                    </div>
-                </div>
-                <div className="legend">
-                    <div><span className="dot omega"></span>Clase Omega</div>
-                    <div><span className="dot no-omega"></span>No Omega</div>
-                </div>
-            </div>
+  useEffect(() => {
+    const records = jsonData.melate_retro;
+    const totalRecords = records.length;
+    const omegaCount = records.filter(r => r.clase_omega === 1).length;
+    const nonOmegaCount = totalRecords - omegaCount;
+    const omegaPercentage = totalRecords > 0 ? (omegaCount / totalRecords) * 100 : 0;
+    const nonOmegaPercentage = totalRecords > 0 ? (nonOmegaCount / totalRecords) * 100 : 0;
 
-            <div className="chart-container">
-                <h4>Basado en Todas las Combinaciones Posibles ({totalCombinacionesPosibles.toLocaleString()})</h4>
-                <div className="chart-bar">
-                     <div 
-                        className="bar-segment omega" 
-                        style={{ width: `${porcentajeOmegaTotal}%` }}
-                        title={`Clase Omega: ${combinacionesOmegaTotales.toLocaleString()} combinaciones`}
-                    >
-                        {porcentajeOmegaTotal.toFixed(2)}%
-                    </div>
-                    <div 
-                        className="bar-segment no-omega" 
-                        style={{ width: `${porcentajeNoOmegaTotal}%` }}
-                        title={`No Omega: ${combinacionesNoOmegaTotales.toLocaleString()} combinaciones`}
-                    >
-                        {porcentajeNoOmegaTotal.toFixed(2)}%
-                    </div>
-                </div>
-                 <div className="legend">
-                    <div><span className="dot omega"></span>Clase Omega</div>
-                    <div><span className="dot no-omega"></span>No Omega</div>
-                </div>
-            </div>
+    setStats({
+      totalRecords,
+      omegaCount,
+      nonOmegaCount,
+      omegaPercentage,
+      nonOmegaPercentage,
+    });
+  }, []);
+
+  if (!stats) {
+    return <div>Cargando estadísticas...</div>;
+  }
+
+  return (
+    <div className="distribution-container">
+      <h3>Distribución de Clases Omega</h3>
+
+      <div className="chart-section">
+        <h4>Basado en Sorteos Históricos ({stats.totalRecords.toLocaleString()})</h4>
+        <div className="progress-bar">
+          <div
+            className="progress-omega"
+            style={{ width: `${stats.omegaPercentage}%` }}
+            title={`Clase Omega: ${stats.omegaPercentage.toFixed(2)}%`}
+          >
+            {stats.omegaPercentage.toFixed(2)}%
+          </div>
+          <div
+            className="progress-no-omega"
+            style={{ width: `${stats.nonOmegaPercentage}%` }}
+            title={`No Omega: ${stats.nonOmegaPercentage.toFixed(2)}%`}
+          >
+            {stats.nonOmegaPercentage.toFixed(2)}%
+          </div>
         </div>
-    );
+        <div className="legend">
+          <span><span className="dot omega-dot"></span> Clase Omega ({stats.omegaCount.toLocaleString()})</span>
+          <span><span className="dot no-omega-dot"></span> No Omega ({stats.nonOmegaCount.toLocaleString()})</span>
+        </div>
+      </div>
+
+      <div className="chart-section">
+        <h4>Basado en Todas las Combinaciones Posibles ({totalCombinations.toLocaleString()})</h4>
+        <div className="progress-bar">
+          <div
+            className="progress-omega"
+            style={{ width: `${omegaCombinationsPercentage}%` }}
+            title={`Clase Omega: ${omegaCombinationsPercentage.toFixed(2)}%`}
+          >
+            {omegaCombinationsPercentage.toFixed(2)}%
+          </div>
+          <div
+            className="progress-no-omega"
+            style={{ width: `${nonOmegaCombinationsPercentage}%` }}
+            title={`No Omega: ${nonOmegaCombinationsPercentage.toFixed(2)}%`}
+          >
+            {nonOmegaCombinationsPercentage.toFixed(2)}%
+          </div>
+        </div>
+        <div className="legend">
+          <span><span className="dot omega-dot"></span> Clase Omega ({omegaCombinations.toLocaleString()})</span>
+          <span><span className="dot no-omega-dot"></span> No Omega ({nonOmegaCombinations.toLocaleString()})</span>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default DistributionCharts;
