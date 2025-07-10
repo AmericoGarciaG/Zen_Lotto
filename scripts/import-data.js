@@ -86,7 +86,6 @@ function analizarCombinacion(combinacion) {
         afinidad_pares: afinidadPares,
         afinidad_tercias: afinidadTercias,
         afinidad_cuartetos: afinidadCuartetos,
-        afinidad_total: afinidadPares + afinidadTercias + afinidadCuartetos,
         omega_score: omegaScore
     };
 }
@@ -125,7 +124,6 @@ async function main() {
                 r1 INTEGER, r2 INTEGER, r3 INTEGER, r4 INTEGER, r5 INTEGER, r6 INTEGER,
                 bolsa_acumulada TEXT,
                 clase_omega INTEGER,
-                afinidad_total INTEGER,
                 afinidad_cuartetos INTEGER,
                 afinidad_tercias INTEGER,
                 afinidad_pares INTEGER,
@@ -142,9 +140,9 @@ async function main() {
         const stmt = db.prepare(`
             INSERT OR IGNORE INTO melate_retro (
                 concurso, fecha, r1, r2, r3, r4, r5, r6, bolsa_acumulada, 
-                clase_omega, afinidad_total, afinidad_cuartetos, afinidad_tercias, afinidad_pares,
+                clase_omega, afinidad_cuartetos, afinidad_tercias, afinidad_pares,
                 omega_score
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `);
 
         records.forEach(record => {
@@ -164,7 +162,6 @@ async function main() {
                     record.F1, record.F2, record.F3, record.F4, record.F5, record.F6,
                     record.BOLSA,
                     analisis.clase_omega,
-                    analisis.afinidad_total,
                     analisis.afinidad_cuartetos,
                     analisis.afinidad_tercias,
                     analisis.afinidad_pares,
