@@ -1,0 +1,71 @@
+/* src/components/DatabaseViewer.css */
+.database-viewer {
+  font-family: sans-serif;
+  padding: 1rem;
+  color: rgba(255, 255, 255, 0.87);
+}
+
+table {
+  width: 100%;
+  table-layout: auto; /* Permite que el navegador ajuste las columnas */
+  border-collapse: collapse;
+  margin-top: 1rem;
+  background-color: #242424;
+}
+
+thead {
+  background-color: #3a3a3a;
+}
+
+th, td {
+  border: 1px solid #444;
+  padding: 0.5rem 1rem; /* Más padding horizontal */
+  text-align: center;
+  white-space: nowrap;
+}
+
+th {
+  font-weight: bold;
+}
+
+/* Anchos de columna específicos */
+th:nth-child(1), td:nth-child(1) { width: 10%; } /* Concurso */
+th:nth-child(2), td:nth-child(2) { width: 15%; } /* Fecha */
+th:nth-child(3), td:nth-child(3),
+th:nth-child(4), td:nth-child(4),
+th:nth-child(5), td:nth-child(5),
+th:nth-child(6), td:nth-child(6),
+th:nth-child(7), td:nth-child(7),
+th:nth-child(8), td:nth-child(8) { width: 7%; }  /* R1-R6 */
+th:nth-child(9), td:nth-child(9) { width: 12%; } /* Clase Omega */
+
+.omega {
+  background-color: #1a4d28;
+  color: #d4edda;
+}
+
+.no-omega {
+  background-color: #5d1c24;
+  color: #f8d7da;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.pagination button {
+  background-color: #3a3a3a;
+  color: white;
+  border: 1px solid #555;
+  padding: 0.5rem 1rem;
+  margin: 0.25rem;
+  cursor: pointer;
+}
+
+.pagination button.active {
+  background-color: #555;
+  font-weight: bold;
+}

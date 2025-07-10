@@ -1,0 +1,10 @@
+{
+    "urls": {
+        "melate_retro": "https://www.loterianacional.gob.mx/Home/Historicos?ARHP=TQBlAGwAYQB0AGUALQBSAGUAdAByAG8A"
+    },
+    "omega_criteria": {
+        "umbral_pares": 459,
+        "umbral_tercias": 74,
+        "umbral_cuartetos": 10
+    }
+}

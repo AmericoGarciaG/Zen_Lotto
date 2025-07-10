@@ -1,0 +1,16 @@
+{
+  "name": "data-importer",
+  "version": "1.0.0",
+  "description": "Manages the download and processing of lottery data.",
+  "main": "import-data.js",
+  "scripts": {
+    "start": "node import-data.js",
+    "generate-json": "node generate-json.js"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "csv-parse": "^4.16.3",
+    "node-fetch": "^2.7.0",
+    "sqlite3": "^5.0.2"
+  }
+}
