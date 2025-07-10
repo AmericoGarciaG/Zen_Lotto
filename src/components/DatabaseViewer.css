@@ -7,7 +7,7 @@
 
 table {
   width: 100%;
-  table-layout: auto; /* Permite que el navegador ajuste las columnas */
+  table-layout: auto;
   border-collapse: collapse;
   margin-top: 1rem;
   background-color: #242424;
@@ -19,7 +19,7 @@ thead {
 
 th, td {
   border: 1px solid #444;
-  padding: 0.5rem 1rem; /* Más padding horizontal */
+  padding: 0.5rem 1rem;
   text-align: center;
   white-space: nowrap;
 }
@@ -28,16 +28,15 @@ th {
   font-weight: bold;
 }
 
-/* Anchos de columna específicos */
-th:nth-child(1), td:nth-child(1) { width: 10%; } /* Concurso */
-th:nth-child(2), td:nth-child(2) { width: 15%; } /* Fecha */
+th:nth-child(1), td:nth-child(1) { width: 10%; }
+th:nth-child(2), td:nth-child(2) { width: 15%; }
 th:nth-child(3), td:nth-child(3),
 th:nth-child(4), td:nth-child(4),
 th:nth-child(5), td:nth-child(5),
 th:nth-child(6), td:nth-child(6),
 th:nth-child(7), td:nth-child(7),
-th:nth-child(8), td:nth-child(8) { width: 7%; }  /* R1-R6 */
-th:nth-child(9), td:nth-child(9) { width: 12%; } /* Clase Omega */
+th:nth-child(8), td:nth-child(8) { width: 7%; }
+th:nth-child(9), td:nth-child(9) { width: 12%; }
 
 .omega {
   background-color: #1a4d28;
@@ -52,8 +51,8 @@ th:nth-child(9), td:nth-child(9) { width: 12%; } /* Clase Omega */
 .pagination {
   display: flex;
   justify-content: center;
-  margin-top: 1rem;
-  flex-wrap: wrap;
+  align-items: center;
+  margin: 1rem 0;
 }
 
 .pagination button {
@@ -61,11 +60,25 @@ th:nth-child(9), td:nth-child(9) { width: 12%; } /* Clase Omega */
   color: white;
   border: 1px solid #555;
   padding: 0.5rem 1rem;
-  margin: 0.25rem;
+  margin: 0 0.25rem;
   cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.pagination button:hover {
+  background-color: #555;
+}
+
+.pagination button:disabled {
+  background-color: #2a2a2a;
+  color: #666;
+  cursor: not-allowed;
 }
 
 .pagination button.active {
-  background-color: #555;
+  background-color: #007bff;
+  color: white;
   font-weight: bold;
+  border-color: #007bff;
 }

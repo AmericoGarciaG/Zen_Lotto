@@ -16,7 +16,49 @@ interface MelateRetroRecord {
   clase_omega: number;
 }
 
-const RECORDS_PER_PAGE = 15;
+const RECORDS_PER_PAGE = 20;
+
+const Pagination: React.FC<{
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}> = ({ currentPage, totalPages, onPageChange }) => {
+  const getPaginationGroup = () => {
+    let start = Math.floor((currentPage - 1) / 5) * 5;
+    const end = start + 5;
+    const group = [];
+    for (let i = start + 1; i <= end && i <= totalPages; i++) {
+      group.push(i);
+    }
+    return group;
+  };
+
+  return (
+    <div className="pagination">
+      <button onClick={() => onPageChange(1)} disabled={currentPage === 1}>
+        « Primera
+      </button>
+      <button onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}>
+        ‹ Anterior
+      </button>
+      {getPaginationGroup().map(item => (
+        <button
+          key={item}
+          onClick={() => onPageChange(item)}
+          className={currentPage === item ? 'active' : ''}
+        >
+          {item}
+        </button>
+      ))}
+      <button onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+        Siguiente ›
+      </button>
+      <button onClick={() => onPageChange(totalPages)} disabled={currentPage === totalPages}>
+        Última »
+      </button>
+    </div>
+  );
+};
 
 const DatabaseViewer: React.FC = () => {
   const [records, setRecords] = useState<MelateRetroRecord[]>([]);
@@ -30,10 +72,6 @@ const DatabaseViewer: React.FC = () => {
   const startIndex = (currentPage - 1) * RECORDS_PER_PAGE;
   const currentRecords = records.slice(startIndex, startIndex + RECORDS_PER_PAGE);
 
-  const goToPage = (page: number) => {
-    setCurrentPage(page);
-  };
-
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, '0');
@@ -45,6 +83,11 @@ const DatabaseViewer: React.FC = () => {
   return (
     <div className="database-viewer">
       <h2>Melate Retro - Registros Históricos</h2>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
       <table>
         <thead>
           <tr>
@@ -77,17 +120,11 @@ const DatabaseViewer: React.FC = () => {
           ))}
         </tbody>
       </table>
-      <div className="pagination">
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-          <button
-            key={page}
-            onClick={() => goToPage(page)}
-            className={currentPage === page ? 'active' : ''}
-          >
-            {page}
-          </button>
-        ))}
-      </div>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };
