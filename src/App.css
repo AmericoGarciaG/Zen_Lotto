@@ -1,102 +1,29 @@
-/* styles/App.css */
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
 
-.App-header {
-  margin-bottom: 2rem;
-}
-
-.App-header h1 {
-  font-size: 2.5rem;
-  color: #61dafb;
-}
-
-.combination-inputs {
+.button-group {
+  margin-top: 1rem;
   display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.analyzer-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .combination-inputs input {
-  width: 50px;
-  height: 50px;
-  text-align: center;
-  font-size: 1.5rem;
-  border-radius: 8px;
-  border: 1px solid #555;
-  background-color: #3a3a3a;
-  color: white;
+  width: 60px; /* Increased width */
+  height: 60px; /* Increased height */
+  font-size: 2rem; /* Increased font size */
+  text-align: center; /* Center the numbers */
 }
 
-button {
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  border-radius: 8px;
-  border: 1px solid transparent;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-button.active {
-  background-color: #000;
-  color: white;
+.App-header h1 {
+  color: #00D8FF; /* Zen Lotto title color */
 }
 
-.validation-error {
-  color: #ff6b6b;
-  margin-bottom: 1rem;
-}
-
-.analysis-results {
-  list-style: none;
-  padding: 0;
-  margin-top: 1.5rem;
-}
-
-.result-item {
-  padding: 0.75rem;
-  margin-bottom: 0.5rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.result-item.good {
-  background-color: #1a4d28;
-  color: #d4edda;
-}
-
-.result-item.bad {
-  background-color: #5d1c24;
-  color: #f8d7da;
-}
-
-.result-item:hover {
-  background-color: #444;
-}
-
-.omega-details {
-  margin-top: 1.5rem;
-  padding: 1rem;
-  background-color: #2b2b2b;
-  border-radius: 8px;
-}
-
-.omega-details ul {
-  list-style: none;
-  padding: 0;
+.App-header nav {
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 1rem;
 }

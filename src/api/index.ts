@@ -1,26 +1,19 @@
 // src/api/index.ts
 
 import db from './db.json';
-
-// Define the structure of a single draw
-export interface Draw {
-  concurso: number;
-  fecha: string;
-  combinacion: number[];
-  adicional: number;
-  bolsa: number;
-}
+import type { Draw } from './types'; // Import the single source of truth
 
 /**
  * Fetches the historical lottery data.
- * In the future, this function could fetch from a real backend API.
- * For now, it returns data from a local JSON file.
+ * This function now correctly reads the data from the local db.json file
+ * and uses the centralized Draw interface.
  */
 export const getHistoricalData = (): Promise<Draw[]> => {
   return new Promise((resolve) => {
     // Simulate a network delay
     setTimeout(() => {
-      resolve(db.historicalData as Draw[]);
+      // The data is under the 'melate_retro' key
+      resolve(db.melate_retro as Draw[]); 
     }, 200); // 200ms delay
   });
 };

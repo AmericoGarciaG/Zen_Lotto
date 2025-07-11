@@ -7,11 +7,7 @@ interface AnalysisResult {
   message: string;
 }
 
-interface CombinationAnalyzerProps {
-  setActiveChart: (chart: 'omegaDistribution' | null) => void;
-}
-
-const CombinationAnalyzer: React.FC<CombinationAnalyzerProps> = ({ setActiveChart }) => {
+const CombinationAnalyzer: React.FC = () => {
   const [combination, setCombination] = useState<(number | '')[]>(Array(6).fill(''));
   const [omegaResult, setOmegaResult] = useState<OmegaEvaluationResult | null>(null);
   const [analysisResults, setAnalysisResults] = useState<AnalysisResult[]>([]);
@@ -71,7 +67,16 @@ const CombinationAnalyzer: React.FC<CombinationAnalyzerProps> = ({ setActiveChar
     }
 
     setAnalysisResults(results);
-    setActiveChart('omegaDistribution'); // Mostrar el gráfico automáticamente
+  };
+
+  const handleGenerarOmega = () => {
+    // Lógica para generar una combinación Omega
+    console.log("Generando Omega...");
+  };
+
+  const handleRegistrarOmega = () => {
+    // Lógica para registrar la combinación Omega
+    console.log("Registrando Omega...");
   };
 
   const handleInputChange = (index: number, value: string) => {
@@ -81,7 +86,6 @@ const CombinationAnalyzer: React.FC<CombinationAnalyzerProps> = ({ setActiveChar
     setCombination(newCombination);
     setAnalysisResults([]);
     setOmegaResult(null);
-    setActiveChart(null); // Ocultar el gráfico al cambiar los números
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
@@ -95,7 +99,7 @@ const CombinationAnalyzer: React.FC<CombinationAnalyzerProps> = ({ setActiveChar
   };
 
   return (
-    <div>
+    <div className="analyzer-container">
       {error && <div className="validation-error">{error}</div>}
       <div className="combination-inputs">
         {combination.map((value, index) => (
@@ -111,9 +115,17 @@ const CombinationAnalyzer: React.FC<CombinationAnalyzerProps> = ({ setActiveChar
           />
         ))}
       </div>
-      <button ref={analyzeButtonRef} onClick={handleAnalyze} disabled={error !== null}>
-        Analizar
-      </button>
+      <div className="button-group">
+        <button ref={analyzeButtonRef} onClick={handleAnalyze} disabled={error !== null}>
+          Analizar
+        </button>
+        <button onClick={handleGenerarOmega}>
+          Generar Omega
+        </button>
+        <button onClick={handleRegistrarOmega}>
+          Registrar Omega
+        </button>
+      </div>
       <ul className="analysis-results">
         {analysisResults.map((result, index) => (
           <li key={index} className={`result-item ${result.status}`}>

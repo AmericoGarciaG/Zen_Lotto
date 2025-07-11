@@ -1,0 +1,27 @@
+.settings-buttons {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.logs-container {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: #333;
+  border-radius: 8px;
+  text-align: left;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.logs-container h3 {
+  margin-top: 0;
+  color: #00D8FF;
+}
+
+.logs-container pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
