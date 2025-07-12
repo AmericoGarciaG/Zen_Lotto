@@ -1,10 +1,11 @@
 // src/components/DatabaseViewer.tsx
 import React, { useState, useEffect } from 'react';
-import jsonData from '../api/db.json';
+// import jsonData from '../api/db.json'; // <<-- REMOVED STATIC IMPORT
 import './DatabaseViewer.css';
 
 interface MelateRetroRecord {
-  id: number;
+  // Assuming 'id' might not exist and making it optional
+  id?: number;
   concurso: number;
   fecha: string;
   r1: number;
@@ -68,10 +69,28 @@ const Pagination: React.FC<{
 const DatabaseViewer: React.FC = () => {
   const [records, setRecords] = useState<MelateRetroRecord[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // The records are already sorted by 'concurso' descending in the JSON.
-    setRecords(jsonData.melate_retro);
+    // Dynamically fetch the JSON data
+    const fetchData = async () => {
+      try {
+        // Adding a cache-busting query parameter
+        const response = await fetch(`/db.json?v=${new Date().getTime()}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        // Access the data under the 'historicos' key
+        setRecords(data.historicos || []);
+      } catch (e) {
+        console.error("Failed to fetch database:", e);
+        setError("No se pudo cargar la base de datos. Asegúrate de que el archivo db.json existe en la carpeta 'public' y es accesible.");
+        setRecords([]); // Clear records on error
+      }
+    };
+
+    fetchData();
   }, []);
 
   const totalPages = Math.ceil(records.length / RECORDS_PER_PAGE);
@@ -98,6 +117,10 @@ const DatabaseViewer: React.FC = () => {
       maximumFractionDigits: 0,
     }).format(number);
   };
+
+  if (error) {
+    return <div className="database-viewer error-message">{error}</div>;
+  }
 
   return (
     <div className="database-viewer">
@@ -128,15 +151,15 @@ const DatabaseViewer: React.FC = () => {
         </thead>
         <tbody>
           {currentRecords.map((record, index) => {
-            const recordIndexInFullArray = startIndex + index;
-            // The next contest in chronological order is the previous item in the array
-            const nextContestRecord = records[recordIndexInFullArray - 1];
-            const isWinnerBolsa = nextContestRecord 
-              ? parseFloat(nextContestRecord.bolsa_acumulada) === 5000000 
-              : false;
+             const recordIndexInFullArray = startIndex + index;
+             const nextContestRecord = records[recordIndexInFullArray - 1];
+             const isWinnerBolsa = nextContestRecord 
+               ? parseFloat(nextContestRecord.bolsa_acumulada) === 5000000 
+               : false;
 
             return (
-              <tr key={record.id}>
+              // Use concurso as key since it's unique
+              <tr key={record.concurso}>
                 <td>{record.concurso}</td>
                 <td>{formatDate(record.fecha)}</td>
                 <td>{record.r1}</td>

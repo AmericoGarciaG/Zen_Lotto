@@ -1,4 +1,5 @@
-import { FREQ_PARES, FREQ_TERCIAS, FREQ_CUARTETOS } from './omega-data';
+// Importa los datos directamente del archivo JSON.
+import { FREQ_PARES, FREQ_TERCIAS, FREQ_CUARTETOS } from './omega-data.json';
 
 // Criterios Omega puros
 const UMBRAL_PARES = 459;
@@ -17,41 +18,51 @@ export interface OmegaEvaluationResult {
     criteriosCumplidos: number;
 }
 
+// Función para generar todas las combinaciones de un array
+function getCombinations(array: number[], k: number): number[][] {
+    const results: number[][] = [];
+    function combine(startIndex: number, currentCombination: number[]) {
+        if (currentCombination.length === k) {
+            results.push([...currentCombination]);
+            return;
+        }
+        for (let i = startIndex; i < array.length; i++) {
+            currentCombination.push(array[i]);
+            combine(i + 1, currentCombination);
+            currentCombination.pop();
+        }
+    }
+    combine(0, []);
+    return results;
+}
+
+// Las funciones de cálculo ahora usan las combinaciones generadas
 function calcularAfinidadPares(combinacion: number[]): number {
     let total = 0;
-    for (let i = 0; i < combinacion.length; i++) {
-        for (let j = i + 1; j < combinacion.length; j++) {
-            const par = `(${combinacion[i]},${combinacion[j]})`;
-            total += FREQ_PARES[par] || 0;
-        }
+    const pares = getCombinations(combinacion, 2);
+    for (const par of pares) {
+        const key = `(${par.join(',')})`;
+        total += (FREQ_PARES as { [key: string]: number })[key] || 0;
     }
     return total;
 }
 
 function calcularAfinidadTercias(combinacion: number[]): number {
     let total = 0;
-    for (let i = 0; i < combinacion.length; i++) {
-        for (let j = i + 1; j < combinacion.length; j++) {
-            for (let k = j + 1; k < combinacion.length; k++) {
-                const tercia = `(${combinacion[i]},${combinacion[j]},${combinacion[k]})`;
-                total += FREQ_TERCIAS[tercia] || 0;
-            }
-        }
+    const tercias = getCombinations(combinacion, 3);
+    for (const tercia of tercias) {
+        const key = `(${tercia.join(',')})`;
+        total += (FREQ_TERCIAS as { [key: string]: number })[key] || 0;
     }
     return total;
 }
 
 function calcularAfinidadCuartetos(combinacion: number[]): number {
     let total = 0;
-    for (let i = 0; i < combinacion.length; i++) {
-        for (let j = i + 1; j < combinacion.length; j++) {
-            for (let k = j + 1; k < combinacion.length; k++) {
-                for (let l = k + 1; l < combinacion.length; l++) {
-                    const cuarteto = `(${combinacion[i]},${combinacion[j]},${combinacion[k]},${combinacion[l]})`;
-                    total += FREQ_CUARTETOS[cuarteto] || 0;
-                }
-            }
-        }
+    const cuartetos = getCombinations(combinacion, 4);
+    for (const cuarteto of cuartetos) {
+        const key = `(${cuarteto.join(',')})`;
+        total += (FREQ_CUARTETOS as { [key: string]: number })[key] || 0;
     }
     return total;
 }
@@ -66,26 +77,17 @@ export function evaluarOmegaDetallado(combinacion: number[]): OmegaEvaluationRes
 
     const comboOrdenada = [...combinacion].sort((a, b) => a - b);
 
-    // 1. Calcular todas las afinidades primero
     const afinidadCuartetos = calcularAfinidadCuartetos(comboOrdenada);
     const afinidadTercias = calcularAfinidadTercias(comboOrdenada);
     const afinidadPares = calcularAfinidadPares(comboOrdenada);
 
-    // 2. Evaluar cada criterio
     const cumpleCuartetos = afinidadCuartetos >= UMBRAL_CUARTETOS;
     const cumpleTercias = afinidadTercias >= UMBRAL_TERCIAS;
     const cumplePares = afinidadPares >= UMBRAL_PARES;
 
-    // 3. Contar criterios cumplidos
-    let criteriosCumplidos = 0;
-    if (cumpleCuartetos) criteriosCumplidos++;
-    if (cumpleTercias) criteriosCumplidos++;
-    if (cumplePares) criteriosCumplidos++;
-    
-    // 4. Determinar si es Clase Omega (deben cumplirse los 3)
-    const esOmega = cumpleCuartetos && cumpleTercias && cumplePares;
+    const criteriosCumplidos = (cumpleCuartetos ? 1 : 0) + (cumpleTercias ? 1 : 0) + (cumplePares ? 1 : 0);
+    const esOmega = criteriosCumplidos === 3;
 
-    // 5. Devolver siempre el resultado detallado completo
     return {
         esOmega,
         combinacion: comboOrdenada,
